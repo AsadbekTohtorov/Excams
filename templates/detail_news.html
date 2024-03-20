@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}| Детали{{ news.title }}{% endblock title %}
+
+{% block content %}
+<div class="container mx-auto">
+    <h1 class="text-center mb-3 text-2xl">{{ news.title }}</h1>
+    <div class="flex flex-wrap mb-6">
+        <div class="w-full md:w-1/2 mb-4 md:mb-0">
+            <div class="slider-container relative px-20 py-70">
+                {% for image in news.images.all %}
+                    <img src="{{ image.image.url }}" class="w-80 h-80 object-cover mb-3 {% if forloop.first %}block{% else %}hidden{% endif %}" alt="{{ news.title }}">
+                {% endfor %}
+            </div>
+            <div class="flex gap-5 mt-2 justify-center ml-[30px]">
+                <button class="prev-slide-btn flex items-center justify-center w-8 h-8 bg-gray-800 bg-opacity-50 text-white text-2xl rounded-full transition-opacity duration-300 hover:bg-opacity-75 focus:outline-none focus:bg-opacity-75" onclick="prevSlide()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <button class="next-slide-btn flex items-center justify-center w-8 h-8 bg-gray-800 bg-opacity-50 text-white text-2xl rounded-full transition-opacity duration-300 hover:bg-opacity-75 focus:outline-none focus:bg-opacity-75" onclick="nextSlide()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <table class="table-auto w-full">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">Название</th>
+                        <th class="px-4 py-2">Значение</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attribute in news.attributes.all %}
+                        <tr>
+                            <td class="border px-4 py-2">{{ attribute.name }}</td>
+                            <td class="border px-4 py-2">
+                                {% if attribute.link %}
+                                    <a href="{{ attribute.link }}" class="text-blue-500">{{ attribute.value }}</a>
+                                {% else %}
+                                    {{ attribute.value }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="w-full md:w-1/2 md:pl-6">
+            <p class="text-left  mb-3"> Категория: {{ news.category.name }}</p>
+            <p class="text-left mb-3"> Цена: {{ news.price }}</p>
+            <p class="mb-6">{{ news.content }}</p>
+            {% if news.info %}
+                <p class="text-end mt-3">
+                    <a target="_blank" href="{{ news.info.link }}" class="text-blue-500">Link</a> |
+                    <span>{{ news.info.email }}: {{ news.info.rating }}</span>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentIndex = 0;
+    const images = document.querySelectorAll('.slider-container img');
+
+    function showSlide(index) {
+        images.forEach((image, idx) => {
+            if (idx === index) {
+                image.classList.remove('hidden');
+            } else {
+                image.classList.add('hidden');
+            }
+        });
+    }
+
+    function prevSlide() {
+        currentIndex = (currentIndex === 0) ? images.length - 1 : currentIndex - 1;
+        showSlide(currentIndex);
+    }
+
+    function nextSlide() {
+        currentIndex = (currentIndex + 1) % images.length;
+        showSlide(currentIndex);
+    }
+</script>
+{% endblock content %}
